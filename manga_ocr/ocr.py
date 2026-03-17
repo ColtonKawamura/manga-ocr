@@ -1,3 +1,4 @@
+import os
 import re
 from pathlib import Path
 
@@ -12,11 +13,14 @@ class MangaOcrModel(VisionEncoderDecoderModel, GenerationMixin):
     pass
 
 class MangaOcr:
-    def __init__(self, pretrained_model_name_or_path="kha-white/manga-ocr-base", force_cpu=False):
+    def __init__(self, pretrained_model_name_or_path="kha-white/manga-ocr-base", force_cpu=False, force_offline=False):
         logger.info(f"Loading OCR model from {pretrained_model_name_or_path}")
-        self.processor = ViTImageProcessor.from_pretrained(pretrained_model_name_or_path)
-        self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path)
-        self.model = MangaOcrModel.from_pretrained(pretrained_model_name_or_path)
+
+        local_files_only = force_offline or os.environ.get("TRANSFORMERS_OFFLINE") == "1"
+
+        self.processor = ViTImageProcessor.from_pretrained(pretrained_model_name_or_path, local_files_only=local_files_only)
+        self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path, local_files_only=local_files_only)
+        self.model = MangaOcrModel.from_pretrained(pretrained_model_name_or_path, local_files_only=local_files_only)
 
         if not force_cpu and torch.cuda.is_available():
             logger.info("Using CUDA")
