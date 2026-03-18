@@ -49,6 +49,7 @@ def run(
     write_to="clipboard",
     pretrained_model_name_or_path="kha-white/manga-ocr-base",
     force_cpu=False,
+    force_offline=False,
     delay_secs=0.1,
     verbose=False,
 ):
@@ -60,11 +61,12 @@ def run(
     :param write_to: Specifies where to save recognized texts to. Can be either "clipboard", or a path to a text file.
     :param pretrained_model_name_or_path: Path to a trained model, either local or from Transformers' model hub.
     :param force_cpu: If True, OCR will use CPU even if GPU is available.
+    :param force_offline: If True, forces loading model from local cache only, without network access.
     :param verbose: If True, unhides all warnings.
     :param delay_secs: How often to check for new images, in seconds.
     """
 
-    mocr = MangaOcr(pretrained_model_name_or_path, force_cpu)
+    mocr = MangaOcr(pretrained_model_name_or_path, force_cpu, force_offline)
 
     if sys.platform not in ("darwin", "win32") and write_to == "clipboard":
         # Check if the system is using Wayland
